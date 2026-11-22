@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Щелочок Максим, группа 251-361, ЛР6</title>
+    <style>
+        * { box-sizing: border-box; }
+        body { margin: 0; background: #f7efe6; color: #3b2a22; font: 1rem/1.5 system-ui, sans-serif; }
+        header { padding: 1.5rem 1rem; background: #4a2e20; color: white; }
+        header div, main { max-width: 44rem; margin: auto; }
+        header p { margin: 0; }
+        h1 { margin: 0.25rem 0 0; font-size: 1.75rem; }
+        main { padding: 1rem 1rem 2rem; }
+        section { background: white; padding: 1rem; margin-bottom: 0.75rem; border: 1px solid #e4d2c1; border-radius: 0.5rem; }
+        h2 { margin: 0 0 0.5rem; font-size: 1.125rem; }
+        label { display: inline-grid; gap: 0.25rem; margin: 0 0.75rem 0.5rem 0; }
+        input { width: 12rem; max-width: 100%; padding: 0.35rem 0.5rem; font: inherit; border: 1px solid #9a8070; border-radius: 0.25rem; }
+        section p { margin: 0.25rem 0 0; overflow-wrap: anywhere; }
+        button { padding: 0.65rem 1.2rem; background: #4a2e20; color: white; font: inherit; border: 0; border-radius: 0.35rem; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <header>
+        <div>
+            <p>Лабораторная работа № 6</p>
+            <h1>Основы JavaScript</h1>
+        </div>
+    </header>
+    <main>
+        <form id="tasks">
+            <section>
+                <h2>Возведение в степень</h2>
+                <label>Основание x
+                    <input type="number" name="powerBase" value="2" step="any" required>
+                </label>
+                <label>Степень n
+                    <input type="number" name="exponent" value="5" min="1" max="1000000" required>
+                </label>
+                <p>Результат: <output id="powerResult"></output></p>
+            </section>
+            <section>
+                <h2>Наибольший общий делитель</h2>
+                <label>Число a
+                    <input type="number" name="gcdA" value="48" min="0" max="9007199254740991" required>
+                </label>
+                <label>Число b
+                    <input type="number" name="gcdB" value="18" min="0" max="9007199254740991" required>
+                </label>
+                <p>Результат: <output id="gcdResult"></output></p>
+            </section>
+            <section>
+                <h2>Наименьшая цифра</h2>
+                <label>Число x
+                    <input type="number" name="digitNumber" value="58302" min="0" max="9007199254740991" required>
+                </label>
+                <p>Результат: <output id="digitResult"></output></p>
+            </section>
+            <section>
+                <h2>Форма слова «запись»</h2>
+                <label>Количество записей
+                    <input type="number" name="records" value="22" min="0" max="9007199254740991" required>
+                </label>
+                <p>Результат: <output id="recordsResult"></output></p>
+            </section>
+            <section>
+                <h2>Числа Фибоначчи</h2>
+                <label>Индекс n от 0 до 1000
+                    <input type="number" name="fibIndex" value="10" min="0" max="1000" required>
+                </label>
+                <p>Результат: <output id="fibResult"></output></p>
+            </section>
+            <button type="submit">Вычислить</button>
+        </form>
+    </main>
+    <script>
+        function pow(x, n) {
+            if (!Number.isSafeInteger(n) || n < 1) {
+                throw new RangeError('Степень должна быть натуральным числом.');
+            }
+
+            let result = 1;
+            for (let i = 0; i < n; i++) {
+                result *= x;
+            }
+            return result;
+        }
+
+        function gcd(a, b) {
+            while (b !== 0) {
+                const remainder = a % b;
+                a = b;
+                b = remainder;
+            }
+            return a;
+        }
+
+        function minDigit(x) {
+            let min = 9;
+            for (const digit of String(x)) {
+                min = Math.min(min, Number(digit));
+            }
+            return min;
+        }
+
+        function pluralizeRecords(n) {
+            const lastDigit = n % 10;
+            const lastTwoDigits = n % 100;
+            const isTeen = lastTwoDigits >= 11 && lastTwoDigits <= 14;
+
+            if (lastDigit === 1 && !isTeen) {
+                return 'В результате выполнения запроса была найдена ' + n + ' запись';
+            }
+            if (lastDigit >= 2 && lastDigit <= 4 && !isTeen) {
+                return 'В результате выполнения запроса были найдены ' + n + ' записи';
+            }
+            return 'В результате выполнения запроса было найдено ' + n + ' записей';
+        }
+
+        function fibb(n) {
+            let current = 0n;
+            let next = 1n;
+
+            for (let i = 0; i < n; i++) {
+                const sum = current + next;
+                current = next;
+                next = sum;
+            }
+            return current;
+        }
+
+        const form = document.getElementById('tasks');
+
+        function calculate() {
+            const x = form.elements.powerBase.valueAsNumber;
+            const exponent = form.elements.exponent.valueAsNumber;
+            const a = form.elements.gcdA.valueAsNumber;
+            const b = form.elements.gcdB.valueAsNumber;
+            const number = form.elements.digitNumber.valueAsNumber;
+            const records = form.elements.records.valueAsNumber;
+            const index = form.elements.fibIndex.valueAsNumber;
+
+            document.getElementById('powerResult').textContent = pow(x, exponent);
+            document.getElementById('gcdResult').textContent = gcd(a, b);
+            document.getElementById('digitResult').textContent = minDigit(number);
+            document.getElementById('recordsResult').textContent = pluralizeRecords(records);
+            document.getElementById('fibResult').textContent = fibb(index).toString();
+        }
+
+        form.addEventListener('submit', function (event) {
+            event.preventDefault();
+            calculate();
+        });
+
+        calculate();
+    </script>
+</body>
+</html>
